@@ -142,3 +142,22 @@ Report at least:
 - concise message.
 
 Never print full arbitrary project paths into telemetry/logs without following Orca's existing privacy conventions.
+
+## Code-audit ABI clarifications
+
+The current Orca path establishes the script coordinate frame before `generate()`: it rotates the surface into fill-direction coordinates, selects the relevant surface/model/assembly bounds, shifts by the pattern's origin semantics, and converts into a density/spacing-adjusted grid. ABI v1 coordinates are therefore **fill-aligned local grid coordinates**, not world/printer XY.
+
+Top and bottom surface density may be below 100%, so scripts must not assume unit grid spacing means one nozzle-width or a fully dense surface.
+
+The Lua `out:point()` interface is incremental only at the API boundary. Orca's `InfillPolylineOutput` buffers the complete `Points` vector before polygon intersection. Point quotas are therefore direct memory-safety limits.
+
+Before forwarding a point into Orca:
+- reject NaN/Inf;
+- verify the scaled coordinate is representable by `coord_t`;
+- enforce point quota;
+- handle consecutive coordinates that snap to the same Orca point deterministically;
+- on completion, reject a non-empty fill invocation with fewer than two usable points.
+
+The output adapter must preserve Orca's concrete `InfillPolylineClipper` dispatch despite non-virtual `add_point()`; see `11-CODE-AUDIT-2026-09-18.md`.
+
+Script failures must propagate through a user-visible slicing error path. Do not use `InfillFailedException`, which existing fill code catches and discards.
