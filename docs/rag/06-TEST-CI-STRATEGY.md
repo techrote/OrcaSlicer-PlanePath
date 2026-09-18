@@ -154,3 +154,22 @@ OrcaSlicer is large. Establish a fast focused unit-test job for PlanePath develo
 - security negative-test evidence for sandbox work;
 - screenshots only for UI changes, not as substitutes for automated tests;
 - upstream base commit used.
+
+## Additional mandatory regressions from the code audit
+
+The following tests are required because current Orca internals make them easy to get subtly wrong:
+
+- two surfaces on one layer using the same scripted sentinel but **different package IDs** must not batch together;
+- same package with different canonical parameters must not batch together;
+- native narrow-internal-solid substitution to `ipConcentricInternal` must clear scripted invocation state;
+- bridge/helper-generated solids must continue following existing Orca effective-pattern rules rather than accidentally invoking the custom top/bottom/internal selection;
+- scripted generation through the aligned/clipping branch must use the concrete `InfillPolylineClipper` semantics, not only the base output implementation;
+- a script runtime/budget/coordinate failure must produce a propagated user-visible slicing error, never a successful slice with silently missing infill;
+- preserve-source-order patterns must be checked after polygon clipping **and** at final extrusion-entity ordering/reversal boundaries;
+- `FillParams` must remain trivially copyable;
+- adding the sentinel must not break `Fill::use_bridge_flow()` initialization or any exhaustive `InfillPattern` switch;
+- an in-progress multi-layer slice must use one registry content hash even while the UI publishes a reloaded registry snapshot;
+- V1 solid scripts must not unexpectedly inherit `sparse_infill_smooth_factor`;
+- serialization round trips must cover preset JSON, CLI validation, object overrides, standard 3MF and Orca/BBS 3MF.
+
+Performance tests must account for the fact that `InfillPolylineOutput` buffers the complete generated point vector. Output-point quotas therefore need memory-growth assertions, not just Lua instruction/runtime assertions.
