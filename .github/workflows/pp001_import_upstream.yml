@@ -1,0 +1,53 @@
+name: PP-001 one-shot upstream import
+
+on:
+  push:
+    branches:
+      - pp-001-bootstrap
+    paths:
+      - .github/workflows/pp001_import_upstream.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import-upstream:
+    if: startsWith(github.event.head_commit.message, 'chore: stage PP-001 upstream import')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout PlanePath branch with full planning history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: pp-001-bootstrap
+
+      - name: Merge pinned OrcaSlicer upstream history
+        shell: bash
+        env:
+          ORCA_UPSTREAM_SHA: 23c77f15cfa38696d89552344d887ce938ac39d4
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream https://github.com/OrcaSlicer/OrcaSlicer.git
+          git fetch --no-tags upstream main
+
+          if ! git cat-file -e "${ORCA_UPSTREAM_SHA}^{commit}"; then
+            echo "Pinned upstream commit was not fetched from OrcaSlicer/main: ${ORCA_UPSTREAM_SHA}" >&2
+            exit 1
+          fi
+
+          echo "Planning parent: $(git rev-parse HEAD)"
+          echo "Upstream parent: ${ORCA_UPSTREAM_SHA}"
+
+          git merge --allow-unrelated-histories --no-ff --no-edit             -m "chore: import OrcaSlicer upstream ${ORCA_UPSTREAM_SHA}"             "${ORCA_UPSTREAM_SHA}"
+
+          parents=$(git show -s --format='%P' HEAD | wc -w)
+          if [ "${parents}" -ne 2 ]; then
+            echo "Expected a two-parent import merge commit, got ${parents}" >&2
+            exit 1
+          fi
+
+          git push origin HEAD:pp-001-bootstrap
