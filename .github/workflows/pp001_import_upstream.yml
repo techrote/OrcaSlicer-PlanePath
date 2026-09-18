@@ -13,11 +13,11 @@ jobs:
   import-upstream:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PlanePath branch with full planning history
+      - name: Checkout exact triggering commit with full planning history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: pp-001-bootstrap
+          ref: ${{ github.sha }}
 
       - name: Import pinned OrcaSlicer history
         shell: bash
@@ -25,15 +25,6 @@ jobs:
           ORCA_UPSTREAM_SHA: 23c77f15cfa38696d89552344d887ce938ac39d4
         run: |
           set -euo pipefail
-
-          subject="$(git log -1 --pretty=%s)"
-          case "$subject" in
-            "chore: stage PP-001 upstream import"*) ;;
-            *)
-              echo "One-shot import guard: commit '$subject' is not an import trigger."
-              exit 0
-              ;;
-          esac
 
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
