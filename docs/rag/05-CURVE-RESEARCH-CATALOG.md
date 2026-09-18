@@ -112,3 +112,20 @@ For every built-in scripted curve, tests should capture:
 - transformed orientation if supported;
 - clipping smoke tests on rectangle, concave polygon, hole and disconnected islands;
 - point-budget failure at intentionally excessive order.
+
+## Licensing clarification after code audit
+
+OrcaSlicer itself is AGPL-3.0, and the native Hilbert implementation in this codebase explicitly records adaptation from Math::PlanePath.
+
+The conservative rule above means "do not copy external implementation source without checking it", not "GPL-family material is categorically unusable". For every copied/adapted implementation:
+
+1. establish licence compatibility with this AGPL-3.0 fork;
+2. preserve required copyright/attribution/notices;
+3. record source/version/commit where practical;
+4. prefer the existing Orca-native Hilbert implementation for exact parity if that is the clearest compatible source.
+
+Do not deliberately implement a differently oriented Hilbert curve merely to avoid reusing already-compatible code, because PP-008 is a parity gate.
+
+## Output growth note
+
+Although pattern algorithms should generate incrementally where convenient, Orca's current `InfillPolylineOutput` stores the full point path. Candidate evaluation must therefore consider total finite-order point count and memory, not only whether the mathematical generator can be written as an iterator.
