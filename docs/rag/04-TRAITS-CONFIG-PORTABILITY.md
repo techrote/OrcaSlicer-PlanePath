@@ -112,3 +112,39 @@ Dynamic scripts may appear alongside fill patterns, but the underlying config st
 - changing context (top/bottom/internal) preserves independent selections.
 
 The UI must make "scripted/custom" provenance visible enough that a user can tell a project depends on non-stock geometry.
+
+## Code-audit amendments
+
+The second-pass audit in `11-CODE-AUDIT-2026-09-18.md` adds mandatory implementation constraints.
+
+### Trait granularity
+
+Do not model all center/order behaviour as one `centered` boolean. Audit and separate:
+
+- plane-path origin centering;
+- separability/per-body origin;
+- support for `center_of_surface_pattern`;
+- support for top/bottom `SurfaceFillOrder`;
+- source-path ordering preservation;
+- path reversibility;
+- dense bridge/reconstruction sampling;
+- bridge-flow behaviour;
+- sparse-only smooth/multiline capabilities.
+
+### Batching identity
+
+The sentinel alone is not a complete effective pattern identity. A compact scripted invocation identity/fingerprint must be part of `SurfaceFillParams::operator<` and `operator==`; otherwise different scripts/params may be grouped together.
+
+When Orca deliberately substitutes a native effective pattern—especially narrow internal solid -> `ipConcentricInternal`—clear scripted invocation identity from that effective group.
+
+### FillParams POD invariant
+
+Do not add owning dynamic state to `FillParams`; it is statically required to remain trivially copyable. Resolve the scripted invocation against a slice-owned immutable registry snapshot and configure the filler object with immutable state before generation.
+
+### Static enum/UI boundary
+
+The compiled sentinel belongs in the static enum map and the explicit allowed lists for top, bottom and internal-solid patterns only. Dynamic package names remain companion state and are shown by a separate dynamic picker/editor, not by allocating enum values per package.
+
+### Serialization test surface
+
+Companion keys must be tested through preset JSON, CLI/config validation, object/volume `ModelConfig` overrides, standard 3MF, Orca/BBS 3MF, and relevant copy/undo/reset flows.
