@@ -139,3 +139,18 @@ There is no automatic Rectilinear/Hilbert fallback. Silent geometry substitution
 ## Evolution
 
 V1 ABI should be deliberately small and versioned. Additive host features can be negotiated by API version/capabilities. Do not expose all Orca internals "for flexibility"; that would permanently couple third-party scripts to unstable implementation details.
+
+## Mandatory code-audit refinements
+
+Read `11-CODE-AUDIT-2026-09-18.md` before implementing this architecture. The code audit makes the following refinements authoritative:
+
+- the trait model must distinguish plane-path origin, center-of-surface support, inward/outward fill-order support, source-path ordering, reversibility, dense-turn sampling and bridge-flow semantics rather than relying on one broad `centered` concept;
+- scripted invocation identity/fingerprint participates in `SurfaceFillParams` batching;
+- `FillParams` remains trivially copyable and does not own strings/JSON/Lua objects;
+- a slice owns an immutable registry snapshot; layer generation never resolves against a mutable live registry;
+- `FillScriptedPlanePath` is configured with immutable resolved state before `centered()`, `no_sort()`, `is_self_crossing()` or `generate()` are called;
+- preserve-source-order scripts must retain ordering after polygon clipping and through extrusion-entity planning;
+- script failures propagate through a user-visible `SlicingError` path and must not use swallowed `InfillFailedException`;
+- scripted output must go through a type-correct emitter that preserves the concrete `InfillPolylineClipper` path despite non-virtual `add_point()`;
+- the incremental Lua `out:point()` API is not memory streaming: Orca buffers the complete `Points` path, so point quotas are direct memory-safety controls;
+- V1 scripts operate in Orca's fill-aligned local grid coordinates after native rotation/origin selection, not world/printer XY.
