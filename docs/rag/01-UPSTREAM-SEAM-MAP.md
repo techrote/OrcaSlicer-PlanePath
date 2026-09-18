@@ -117,3 +117,8 @@ At the start of every implementation issue that touches Orca source:
 3. compare current behaviour with this map;
 4. update this document in the same PR if paths or semantics materially moved;
 5. avoid restoring obsolete code merely to match this planning snapshot.
+
+
+## PP-001 import verification
+
+PP-001 imported OrcaSlicer commit `23c77f15cfa38696d89552344d887ce938ac39d4` as a real second parent of merge commit `316aa44382bb04a0b368cd565435c1912f8b1951`. This exactly matches the source commit used for the planning/code-audit snapshot, so no seam-map semantic drift was found during bootstrap.
