@@ -29,6 +29,8 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+          planning_parent="$(git rev-parse HEAD)"
+
           git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/OrcaSlicer/OrcaSlicer.git
           git fetch --no-tags upstream main
@@ -38,14 +40,28 @@ jobs:
             exit 1
           fi
 
-          echo "Planning parent: $(git rev-parse HEAD)"
+          echo "Planning parent: ${planning_parent}"
           echo "Upstream parent: ${ORCA_UPSTREAM_SHA}"
 
-          git merge --allow-unrelated-histories --no-ff --no-edit -m "chore: import OrcaSlicer upstream ${ORCA_UPSTREAM_SHA}" "${ORCA_UPSTREAM_SHA}"
+          # Preserve upstream history as the second parent, but keep workflow files
+          # unchanged in this merge. GitHub's ephemeral Actions token may not create
+          # or update workflow files. PP-001 restores upstream workflows afterwards
+          # through the repository API with the user's authorized connection.
+          git merge --allow-unrelated-histories --no-ff --no-commit "${ORCA_UPSTREAM_SHA}"
+          rm -rf .github/workflows
+          git checkout "${planning_parent}" -- .github/workflows
+          git add -A .github/workflows
+          git commit -m "chore: import OrcaSlicer upstream ${ORCA_UPSTREAM_SHA}"
 
           parents="$(git show -s --format='%P' HEAD | wc -w)"
           if [ "${parents}" -ne 2 ]; then
             echo "Expected a two-parent import merge commit, got ${parents}" >&2
+            exit 1
+          fi
+
+          second_parent="$(git show -s --format='%P' HEAD | awk '{print $2}')"
+          if [ "${second_parent}" != "${ORCA_UPSTREAM_SHA}" ]; then
+            echo "Unexpected upstream parent: ${second_parent}" >&2
             exit 1
           fi
 
