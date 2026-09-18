@@ -8,10 +8,11 @@ For every implementation issue, read:
 
 1. `00-PROJECT-BRIEF.md` — scope, definitions, success criteria, and non-goals.
 2. `01-UPSTREAM-SEAM-MAP.md` — where the current OrcaSlicer implementation actually lives and the behaviours that must remain authoritative.
-3. The architecture document(s) named by the issue.
-4. `06-TEST-CI-STRATEGY.md` — test evidence and merge gates.
-5. `08-REVISED-ROADMAP.md` — issue dependencies and intended delivery order.
-6. `09-AUTONOMOUS-EXECUTION-CONTRACT.md` — branch/PR/CI/merge/verification rules.
+3. **`11-CODE-AUDIT-2026-09-18.md` — mandatory second-pass code audit and implementation blockers.**
+4. The architecture document(s) named by the issue.
+5. `06-TEST-CI-STRATEGY.md` — test evidence and merge gates.
+6. `08-REVISED-ROADMAP.md` — issue dependencies and intended delivery order.
+7. `09-AUTONOMOUS-EXECUTION-CONTRACT.md` — branch/PR/CI/merge/verification rules.
 
 Read `07-PLAN-REVIEW.md` whenever changing architecture or scope; it records rejected shortcuts and why they were rejected.
 
@@ -29,16 +30,18 @@ Read `07-PLAN-REVIEW.md` whenever changing architecture or scope; it records rej
 | Critique of the first plan | `07-PLAN-REVIEW.md` |
 | Dependency graph / issue campaign | `08-REVISED-ROADMAP.md` |
 | Autonomous agent operating rules | `09-AUTONOMOUS-EXECUTION-CONTRACT.md` |
+| **Current code-level blockers and corrected seams** | **`11-CODE-AUDIT-2026-09-18.md`** |
 
 ## Authority order
 
 When documents conflict:
 
 1. the current GitHub issue acceptance criteria;
-2. `09-AUTONOMOUS-EXECUTION-CONTRACT.md`;
-3. `08-REVISED-ROADMAP.md`;
-4. architecture/sandbox/config documents;
-5. upstream seam map;
-6. project brief.
+2. `11-CODE-AUDIT-2026-09-18.md` for code facts discovered in the second-pass audit;
+3. `09-AUTONOMOUS-EXECUTION-CONTRACT.md`;
+4. `08-REVISED-ROADMAP.md`;
+5. architecture/sandbox/config documents;
+6. upstream seam map;
+7. project brief.
 
-If current OrcaSlicer upstream has moved, refresh the seam map facts in the implementing PR rather than forcing stale paths onto new code.
+If current OrcaSlicer upstream has moved, refresh the seam map and code-audit facts in the implementing PR rather than forcing stale paths onto new code.
