@@ -127,3 +127,21 @@ The custom build is not complete merely because scripts run. Completion requires
 - explicit trust boundary for transported executable source;
 - concurrency/cancellation/performance evidence;
 - reproducible supported build and documentation.
+
+## Second-pass code-audit corrections
+
+`11-CODE-AUDIT-2026-09-18.md` was produced after rereading the roadmap against Orca's current implementation. The dependency graph remains valid, but the issue scopes are tightened:
+
+- **PP-002:** characterize clipped-fragment/final ordering, batching identity inputs, effective-pattern substitutions, and current solid smoothing semantics.
+- **PP-003:** centralize bridge-flow, ordering/reversibility, origin/center/fill-order distinctions; audit exhaustive enum switches.
+- **PP-004:** add script invocation identity to `SurfaceFillParams` batching, preserve the `FillParams` POD invariant, make the sentinel safely constructible/valid immediately, and clear script identity on native substitutions.
+- **PP-005:** integrate pinned Lua through Orca's dependency superbuild, not a system runtime.
+- **PP-006:** expose a slice-wide immutable registry snapshot as a first-class object.
+- **PP-007:** preserve concrete output dispatch for `InfillPolylineClipper`; script failures use propagated `SlicingError`; validate scaled-coordinate range and minimum usable output.
+- **PP-008:** first parity target is native unsmoothed Hilbert, including its exact power-of-two covering square/orientation.
+- **PP-009:** test final ordering, different-script batching, narrow-concentric substitution and bridge/helper exclusions; do not require sparse smoothing on solid paths.
+- **PP-010:** keep the native pattern enum static: sentinel row plus a separate dynamic package/parameter control.
+- **PP-014:** cover all config/project serialization surfaces rather than one project format.
+- **PP-016:** stress slice-wide snapshot consistency and complete-path buffering/memory growth.
+
+These are amendments to the existing PP issues, not a new parallel implementation track.
