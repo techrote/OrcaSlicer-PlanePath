@@ -191,6 +191,13 @@ TEST_CASE("Native Hilbert raw path matches golden power-of-two fixtures", "[Fill
     }
 }
 
+TEST_CASE("Native Hilbert raw coordinates are independent of smoothing resolution", "[FillPlanePath][PlanePathConformance]")
+{
+    const Points coarse = TestableHilbertCurve().generate_points(1.0, 0., 7);
+    const Points fine   = TestableHilbertCurve().generate_points(0.0001, 0., 7);
+    REQUIRE(coarse == fine);
+}
+
 TEST_CASE("Native Hilbert raw path is a unit-step Hamiltonian traversal", "[FillPlanePath][PlanePathConformance]")
 {
     struct Fixture {
