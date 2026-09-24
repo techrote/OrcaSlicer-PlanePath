@@ -11,6 +11,7 @@
 
 #include "libslic3r/Fill/FillPlanePath.hpp"
 #include "libslic3r/PrintConfig.hpp"
+#include "libslic3r/Surface.hpp"
 
 using namespace Slic3r;
 
