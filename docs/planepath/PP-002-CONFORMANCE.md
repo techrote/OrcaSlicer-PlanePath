@@ -62,7 +62,7 @@ The focused `[PlanePathConformance]` integration set includes the existing turni
 
 An additional check varies top, bottom and internal-solid PlanePath selections while holding bridge inputs fixed and requires identical internal-bridge extrusion. This freezes the current rule that bridge effective fill is not replaced by the configured solid PlanePath.
 
-These tests exercise the high-turn sampling/reconstruction path in `PrintObject.cpp` by its externally visible contract: selected bridge direction and reconstructed/cleaned bridge ends must remain anchored to actually printed support.
+These tests guard the externally visible contract around the high-turn sampling/reconstruction code in `PrintObject.cpp`: selected bridge direction and reconstructed/cleaned bridge ends must remain anchored to actually printed support. They deliberately avoid exposing private reconstruction internals as test API.
 
 ## Focused CI entry point
 
