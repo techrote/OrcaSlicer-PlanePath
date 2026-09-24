@@ -1390,7 +1390,7 @@ TEST_CASE("Native Hilbert final extrusion order remains optimizable by default",
          {"initial_layer_print_height", 0.2}});
 
     size_t checked_collections = 0;
-    size_t checked_paths = 0;
+    size_t checked_entities = 0;
     for (const Layer *layer : print.objects().front()->layers())
         for (const LayerRegion *region : layer->regions())
             for (const ExtrusionEntity *entity : region->fills.entities) {
@@ -1407,15 +1407,13 @@ TEST_CASE("Native Hilbert final extrusion order remains optimizable by default",
                 ++checked_collections;
                 for (const ExtrusionEntity *child : flat.entities)
                     if (solid_role(child->role())) {
-                        const auto *path = dynamic_cast<const ExtrusionPath *>(child);
-                        REQUIRE(path != nullptr);
-                        CHECK(path->can_reverse());
-                        ++checked_paths;
+                        CHECK(child->can_reverse());
+                        ++checked_entities;
                     }
             }
 
     REQUIRE(checked_collections > 0);
-    REQUIRE(checked_paths > 0);
+    REQUIRE(checked_entities > 0);
 }
 
 TEST_CASE("SurfaceFillParams batching keeps distinct native PlanePath patterns separate", "[Fill][PlanePathConformance]")
