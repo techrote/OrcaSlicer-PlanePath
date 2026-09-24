@@ -8,6 +8,7 @@
 #include <set>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "libslic3r/Fill/FillPlanePath.hpp"
 #include "libslic3r/PrintConfig.hpp"
@@ -195,15 +196,17 @@ TEST_CASE("Native Hilbert raw path is a unit-step Hamiltonian traversal", "[Fill
     struct Fixture {
         coord_t max_coordinate;
         size_t side;
+        coord_t end_x;
+        coord_t end_y;
     };
-    const std::array<Fixture, 3> fixtures{{{1, 2}, {3, 4}, {7, 8}}};
+    const std::array<Fixture, 3> fixtures{{{1, 2, 1, 0}, {3, 4, 0, 3}, {7, 8, 7, 0}}};
 
     for (const Fixture &fixture : fixtures) {
         CAPTURE(fixture.max_coordinate, fixture.side);
         const Points points = TestableHilbertCurve().generate_points(0.0125, 0., fixture.max_coordinate);
         REQUIRE(points.size() == fixture.side * fixture.side);
         REQUIRE(points.front() == Point(0, 0));
-        REQUIRE(points.back() == Point(coord_t((fixture.side - 1) * output_scale), 0));
+        REQUIRE(points.back() == Point(coord_t(fixture.end_x * output_scale), coord_t(fixture.end_y * output_scale)));
 
         std::set<std::pair<coord_t, coord_t>> visited;
         for (size_t i = 0; i < points.size(); ++i) {
