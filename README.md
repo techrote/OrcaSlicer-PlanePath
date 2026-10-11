@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **Repository migrated.** Active PlanePath development has moved to [`techrote/OrcaSlicer-PlanePath-fork`](https://github.com/techrote/OrcaSlicer-PlanePath-fork), the corrected genuine OrcaSlicer fork. This repository is retained as historical provenance only. Do not start new PlanePath implementation work, issues, or pull requests here.
+
 <div align="center">
 
 <picture>
